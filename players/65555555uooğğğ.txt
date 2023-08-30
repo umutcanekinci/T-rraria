@@ -1,0 +1,4 @@
+Character = Character (08)
+MaxHealth = 100
+Health = 100
+Items = []

@@ -1,0 +1,17 @@
+		self.Characters, self.CharacterNames, self.CharacterSize, self.CharacterNo, self.CharacterWalkCount = [], [], [0, 0], 1, 0 #[153, 141]
+
+		for _, dirnames, filenames in os.walk("images/characters/"):
+			for CharacterFolder in sorted(dirnames):
+				Character = {}
+				for _, dirnames, filenames in os.walk("images/characters/"+CharacterFolder+"/"):
+					for SpriteFolder in sorted(dirnames):
+						Sprite = []
+						for _, dirnames, filenames in os.walk("images/characters/"+CharacterFolder+"/"+SpriteFolder+"/"):
+							for Photo in sorted(filenames):
+								Sprite.append(pygame.image.load("images/characters/"+CharacterFolder+"/"+SpriteFolder+"/"+Photo).convert_alpha())
+							break	
+						Character[SpriteFolder] =  Sprite	
+					break
+				self.Characters.append(Character)
+				self.CharacterNames.append(CharacterFolder)
+			break
