@@ -138,12 +138,12 @@ class Game(Application):
 		self.windowSize = self.windowWidth, self.windowHeight = (1440, 900)
 		self.windowTitle = "TIRRARIA"
 
-		super().__init__(self.windowTitle, self.windowSize, 30)
+		super().__init__(self.windowTitle, self.windowSize, None, 30)
 		self.objects = {}
 
 		#-# Menu Objects #-#
 		self.windowBackground = pygame.image.load(ImagePath("background", "others", "jpg")).convert_alpha()		
-		self.windowBackground = pygame.transform.scale(self.windowBackground, (self.windowWidth, self.windowHeight))
+		self.windowBackground = pygame.transform.scale(self.windowBackground, self.windowSize)
 		self.tab = "Intro"
 		self.Intro = Image(ImagePath("intro", "others", "jpg"), self.windowSize)
 		self.IntroRect = [0, 0]
@@ -463,15 +463,6 @@ class Game(Application):
 
 	def Draw(self):
 
-		if self.tab in self.objects:
-
-			if "Objects" in self.objects[self.tab]:
-				
-				for object in self.objects[self.tab]["Objects"]:
-					
-					object.Draw(self.window)
-					
-
 		if self.tab == "Game":
 
 			self.window.blit(self.Background, self.BackgroundRect)
@@ -586,8 +577,8 @@ class Game(Application):
 						#else:
 						#	self.NextPage2.ImagePath1 = "buttons, next"
 						self.window.blit(pygame.font.Font(None, 50).render("Page " + str(self.Page), True, (255, 255, 255)), (670, 750))
-						self.NextPage.Draw(self.window, self.mousePosition)
-						self.NextPage2.Draw(self.window, self.mousePosition)
+						self.NextPage.Draw(self.window)
+						self.NextPage2.Draw(self.window)
 					
 					elif self.tab == "Select World":
 
@@ -648,8 +639,8 @@ class Game(Application):
 						#	self.NextPage2.ImagePath1 = "buttons, next"
 
 						self.window.blit(pygame.font.Font(None, 50).render("Page " + str(self.Page), True, (255, 255, 255)), (670, 750))
-						self.NextPage.Draw(self.window, self.mousePosition)
-						self.NextPage2.Draw(self.window, self.mousePosition)
+						self.NextPage.Draw(self.window)
+						self.NextPage2.Draw(self.window)
 
 					elif self.tab == "New Player":
 
@@ -673,8 +664,7 @@ class Game(Application):
 
 				self.objects[self.tab]["Buttons"]["Go Back"].Draw(self.window)
 
-		#-# Update All Things to the Screen #-#
-		pygame.display.update()		
+		super().Draw()
 
 	def ExitEventsHandling(self, Event, mousePosition):
 

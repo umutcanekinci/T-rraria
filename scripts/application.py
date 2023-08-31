@@ -152,7 +152,16 @@ class Application():
 
             self.window.fill(self.backgroundColor)
 
-        if self.objects.__contains__(self.tab) and self.objects[self.tab].__contains__("Buttons"):
-            for button in self.objects[self.tab]["Buttons"].values(): button.Draw(self.window)
+        if self.tab in self.objects:
 
+            if "Buttons" in self.objects[self.tab]:
+
+                for button in self.objects[self.tab]["Buttons"].values(): button.Draw(self.window)
+            
+            if "Objects" in self.objects[self.tab]:
+				
+                for object in self.objects[self.tab]["Objects"]:
+					
+                    object.Draw(self.window)
+                                        
         pygame.display.update()

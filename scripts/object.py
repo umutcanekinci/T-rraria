@@ -36,14 +36,6 @@ class Object(object):
 		self.SetX(position[0])
 		self.SetY(position[1])
 		
-		if hasattr(self, "rect"):
-		
-			self.rect.topleft = self.position
-
-		else:
-
-			self.rect = pygame.Rect(self.position, self.size)
-
 	def SetX(self, x: int) -> None:
 
 		if x == "CENTER":
@@ -53,7 +45,16 @@ class Object(object):
 		else:
 
 			self.x = x
-			self.position = x, self.position[1]
+		
+		self.position = self.x, self.position[1]
+
+		if hasattr(self, "rect"):
+		
+			self.rect.topleft = self.position
+
+		else:
+
+			self.rect = pygame.Rect(self.position, self.size)
 
 	def SetY(self, y: int) -> None:
 		
@@ -64,7 +65,16 @@ class Object(object):
 		else:
 
 			self.y = y
-			self.position = self.position[0], y
+			
+		self.position = self.position[0], self.y
+		
+		if hasattr(self, "rect"):
+		
+			self.rect.topleft = self.position
+
+		else:
+
+			self.rect = pygame.Rect(self.position, self.size)
 
 	def isMouseOver(self, mousePosition: tuple) -> bool:
 		
@@ -100,5 +110,10 @@ class Object(object):
 
 		if self.surface:
 			
-		    surface.blit(self.surface, self.rect)
-			print("drawing")
+			surface.blit(self.surface, self.rect)
+			
+		elif "Normal" in self.images:
+
+			self.surface = self.images["Normal"]
+			surface.blit(self.surface, self.rect)
+		
