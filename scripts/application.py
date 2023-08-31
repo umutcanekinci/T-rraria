@@ -1,5 +1,6 @@
 #-# Import Packages #-#
 import pygame, sys, os
+from button import *
 
 #-# Application Class #-#
 class Application():
@@ -36,12 +37,17 @@ class Application():
             #-# Handling Events #-#
             for event in pygame.event.get():
                 
-                eventHandlings(event)
+                
 
-                if self.objects.__contains__(self.tab) and self.objects[self.tab].__contains__("Buttons"):
+                if self.tab in self.objects:
+                    
+                    if "Buttons" in self.objects[self.tab]:
 
-                    for button in self.objects[self.tab]["Buttons"].values(): button.HandleEvent(event, self.mousePosition)
+                        for button in self.objects[self.tab]["Buttons"].values(): button.HandleEvent(event, self.mousePosition)
 
+                    if "Objects" in self.objects[self.tab]:
+
+                        for object in self.objects[self.tab]["Objects"]: object.HandleEvents(event, self.mousePosition)
 
                 if exitEventsHandling:
                     
@@ -58,6 +64,8 @@ class Application():
                         if event.key == pygame.K_ESCAPE:
 
                             self.Exit()
+
+                eventHandlings(event)
 
             self.Draw()
 
@@ -98,9 +106,36 @@ class Application():
 
         self.backgroundColor = color
 
+    def AddObject(self, tab: str, **kwargs):
+        
+        #-# Creat Tab If not exist #-#
+        self.AddTab(tab)
+        
+        #-# Create object list into tab if not exist #-#
+        if "Objects" not in self.objects[tab]:
+
+            self.objects[tab]["Objects"] = []
+
+        newObject = Object(**kwargs)
+        self.objects[tab]["Objects"].append(newObject)
+
+    def AddButton(self, name: str, tab: str, position: tuple) -> None:
+        
+        #-# Creat Tab If not exist #-#
+        self.AddTab(tab)
+
+        #-# Create button dict into tab if not exist #-#
+        if "Buttons" not in self.objects[tab]:
+
+            self.objects[tab]["Buttons"] = {}
+        
+        #-# Adding button to tab #-#
+        self.objects[tab]["Buttons"][name] = Button(position, self.ButtonSize[tab], name, **self.ButtonProperties)
+
     def AddTab(self, name: str) -> None:
 
-        if not self.objects.__contains__(name):
+        #-# Creat Tab If not exist #-#
+        if not name in self.objects:
 
             self.objects[name] = {}
 

@@ -1,20 +1,35 @@
 import pygame
-from images import Image
+from images import *
+from scripts.object import *
 
-######################################################################
-#
-# Button(Rect, Color, CornerReadius, BorderSize, BorderColor,
-#		 IconPath, IconSize, IconSide, IconMargin,
-#		 Text, FontSize, FontColor, ActiveFontColor, FontSide, FontMargin)
-#
-######################################################################
+class Button(Object):
 
-class Button(object):
-
-	def __init__(self, Rect, Text="Button", Color="white", ActiveColor="white", CornerRadius=0, BorderSize=0, BorderColor="black", FontSize=23, FontColor="white", ActiveFontColor="white", FontSide="Center", FontMargin=20, IconPath=None, IconSize=[10, 10], IconSide="LeftCenter", IconMargin=20):
-
+	def __init__(
+			self,
+			position: tuple = ("CENTER", "CENTER"),
+			size: tuple = (None, None),
+			Text="Button",
+			Color="white",
+			ActiveColor="white",
+			CornerRadius=0,
+			BorderSize=0,
+			BorderColor="black",
+			FontSize=23,
+			FontColor="white",
+			ActiveFontColor="white",
+			FontSide="Center",
+			FontMargin=20,
+			IconPath=None,
+			IconSize=[10, 10],
+			IconSide="LeftCenter",
+			IconMargin=20,
+			surfaceSize: tuple = None
+			):
+		
+		super().__init__(position, size, {}, surfaceSize)
 		#-# Button Proporties #-#
-		self.Rect, self.Color, self.ActiveColor, self.CornerRadius, self.BorderSize, self.BorderColor =  pygame.Rect(Rect[0][0] - CornerRadius, Rect[0][1] - CornerRadius, Rect[1][0] + CornerRadius*2, Rect[1][1] + CornerRadius*2), pygame.Color(Color), pygame.Color(ActiveColor), CornerRadius, BorderSize, pygame.Color(BorderColor)
+		self.Rect = pygame.Rect(self.position[0] - CornerRadius, self.position[1] - CornerRadius, self.size[0] + CornerRadius*2, self.size[1] + CornerRadius*2)
+		self.Color, self.ActiveColor, self.CornerRadius, self.BorderSize, self.BorderColor = pygame.Color(Color), pygame.Color(ActiveColor), CornerRadius, BorderSize, pygame.Color(BorderColor)
 
 		#-# Text And Font Proporties #-#
 		self.Text, self.Font, self.FontSize, self.FontColor, self.ActiveFontColor = Text, pygame.font.Font("fonts/comic.ttf", FontSize), FontSize, pygame.Color(FontColor), pygame.Color(ActiveFontColor)
@@ -53,21 +68,6 @@ class Button(object):
 		
 		self.Active, self.Style = False, "Normal"
 
-	def SetPosition(self, position: tuple):
-		self.Rect.topleft = position
-
-	def SetX(self, x):
-		self.Rect.x = x
-	
-	def SetY(self, y):
-		self.Rect.y = y
-
-	def MouseOver(self, MousePosition):
-		return True if self.Rect.collidepoint(MousePosition) else False
-
-	def Click(self, Event, MousePosition):
-		return True if Event.type == pygame.MOUSEBUTTONUP and self.MouseOver(MousePosition) else False
-
 	def GetSide(self, Side, Size, Margin):
 
 		#-# Sides #-#
@@ -90,7 +90,7 @@ class Button(object):
 
 	def HandleEvent(self, Event, MousePosition):
 
-		if self.MouseOver(MousePosition):
+		if self.isMouseOver(MousePosition):
 			
 			self.Style = "MouseOverActive" if self.Style == "Active" else "MouseOver"		
 		else:
@@ -101,7 +101,7 @@ class Button(object):
 			
 			self.Style = "Normal"
 
-		if self.Click(Event, MousePosition):
+		if self.isMouseClick(Event, MousePosition):
 			
 			self.Style = "MouseOverActive" if self.Style == "MouseOver" else "MouseOver"
 

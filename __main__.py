@@ -11,6 +11,7 @@ from scripts.application import Application
 from scripts.color import *
 from button import *
 from scripts.path import *
+from scripts.object import *
 
 class InputBox:
 
@@ -138,21 +139,24 @@ class Game(Application):
 		self.windowTitle = "TIRRARIA"
 
 		super().__init__(self.windowTitle, self.windowSize, 30)
-		
+		self.objects = {}
+
 		#-# Menu Objects #-#
 		self.windowBackground = pygame.image.load(ImagePath("background", "others", "jpg")).convert_alpha()		
 		self.windowBackground = pygame.transform.scale(self.windowBackground, (self.windowWidth, self.windowHeight))
 		self.tab = "Intro"
 		self.Intro = Image(ImagePath("intro", "others", "jpg"), self.windowSize)
 		self.IntroRect = [0, 0]
-		self.Logo = Object("CENTER", 20, 486, 142, ImagePath("logo", "others"), None, self.windowSize)
+
+		self.Logo = self.AddObject("Main Menu", position=("CENTER", 20), size=(486, 142), imagePaths={"Normal" : ImagePath("logo", "others")}, surfaceSize=self.windowSize)
 		
-		self.Play = Object("CENTER", 200, 400, 40, ImagePath("play", "button"), ImagePath("play2", "button"), self.windowSize)
-		self.contactUs = Object("CENTER", 250, 400, 40,  ImagePath("contact_us", "button"), ImagePath("contact_us2", "button"), self.windowSize)
-		self.ExitButton = Object("CENTER", 300, 400, 40, ImagePath("exit", "button"), ImagePath("exit2", "button"), self.windowSize)
+		#self.Play = Object("CENTER", 200, 400, 40, ImagePath("play", "button"), ImagePath("play2", "button"), self.windowSize)
+		#self.contactUs = Object("CENTER", 250, 400, 40,  ImagePath("contact_us", "button"), ImagePath("contact_us2", "button"), self.windowSize)
+		#self.ExitButton = Object("CENTER", 300, 400, 40, ImagePath("exit", "button"), ImagePath("exit2", "button"), self.windowSize)
 
 		#-# Button Properties #-#
-		self.ButtonProperties = dict(Color = (8, 7, 174),
+		self.ButtonProperties = dict(
+		Color = (8, 7, 174),
 		ActiveColor = (135, 135, 197),
 		CornerRadius = 0,
 		BorderSize = 2,
@@ -165,17 +169,24 @@ class Game(Application):
 		IconPath = None,
 		IconSize = None,
 		IconSide = None,
-		IconMargin = None
+		IconMargin = None,
+		surfaceSize = self.windowSize
 		)
 		
-		self.ButtonSize = { "Main Menu" : (233, 40),
+		self.ButtonSize = { "Play" : (400, 40),
+		     				"Contact Us" : (400, 40),
+							"Exit" : (400, 40),
+							"Main Menu" : (233, 40),
 		     				"Contact Us" : (233, 40),
 							"Select Player" : (233, 40),
 						    "Select World" : (233, 40),
 						    "New Player" : (233, 40),
 						    "New World" : (233, 40)}
 		
-		self.CreateButton({
+		
+
+		self.CreateButtons({
+							"Main Menu" : [["Play", ("CENTER", 200)], ["Contact Us", ("CENTER", 250)], ["Exit", ("CENTER", 300)]],
 							"Contact Us" : [["Go Back", (100, 100)]],
 							"Select Player" : [["Select Player", (723, 845)], ["New Player", (601, 310)], ["Go Back", (700, 50)]],
 							"Select World" : [["Select World", (723, 845)], ["New World", (601, 310)], ["Go Back", (700, 50)]],
@@ -188,9 +199,9 @@ class Game(Application):
 
 		self.WorldNameInput = InputBox(601, 350, 233, 40)
 		
-		self.SocialMedia = Object("CENTER", 200, 600, 600, ImagePath("social_media", "others"), None, self.windowSize)
-		self.NextButton = Object(800, 550, 64, 64, ImagePath("next", "button"), ImagePath("next2", "button"))	
-		self.NextButton2 = Object(565, 550, 64, 64, ImagePath("next3", "button"), ImagePath("next4", "button"))	
+		self.SocialMedia = Object(("CENTER", 200), (600, 600), {"Normal" : ImagePath("social_media", "others")}, self.windowSize)
+		self.NextButton = Object((800, 550), (64, 64), {"Normal" : ImagePath("next", "button"), "Mouse Over" : ImagePath("next2", "button")})
+		self.NextButton2 = Object((565, 550), (64, 64), {"Normal" : ImagePath("next3", "button"), "Mouse Over" : ImagePath("next4", "button")})
 		
 		self.Heart = Image(ImagePath("heart", "objects"))
 		self.Heart2 = Image(ImagePath("heart2", "objects"))
@@ -198,8 +209,8 @@ class Game(Application):
 		self.SelectedPlayer, self.SelectedWorld = None, None
 		self.CountOfPlayers, self.CountOfWorlds = 0, 0
 		self.Page = 1
-		self.NextPage = Object(870, 740, 64, 64, ImagePath("next", "button"), ImagePath("next2", "button"))
-		self.NextPage2 = Object(510, 740, 64, 64, ImagePath("next3", "button"), ImagePath("next4", "button"))
+		self.NextPage = Object((870, 740), (64, 64), {"Normal" : ImagePath("next", "button"), "Mouse Over" : ImagePath("next2", "button")})
+		self.NextPage2 = Object((510, 740), (64, 64), {"Normal" : ImagePath("next3", "button"), "Mouse Over" : ImagePath("next4", "button")})
 		
 		self.SelectPlayer = Image(ImagePath("selectPlayer", "others"))
 		
@@ -229,32 +240,15 @@ class Game(Application):
 		#pygame.mouse.set_visible(False)
 		self.tileSize = [64, 64]
 
-	def CreateButton(self, TabButtons): # [Tab : ["Name", Position]]
+	def CreateButtons(self, TabButtons): # [Tab : ["Name", Position]]
 
-		for Tab, Buttons in TabButtons.items():
+		for tab, buttons in TabButtons.items():
 
-			for button in Buttons:
+			for button in buttons:
 			
-				Name, Position = button[0], button[1]
+				name, position = button[0], button[1]
 
-				try:
-
-					self.objects
-
-				except AttributeError:
-
-					self.objects = {}
-					self.objects["Intro"] = {}
-
-				if Tab not in self.objects:
-
-					self.objects[Tab] = {}
-
-				if "Buttons" not in self.objects[Tab]:
-					
-					self.objects[Tab]["Buttons"] = {}
-
-				self.objects[Tab]["Buttons"][Name] = Button((Position, self.ButtonSize[Tab]), Name, **self.ButtonProperties)
+				self.AddButton(name, tab, position)
 
 	def Run(self):
 		
@@ -262,7 +256,6 @@ class Game(Application):
 				
 			if self.tab == "Game":
 
-				#print(len(self.Map.MapData), (self.Player.Hitbox[0] - self.BackgroundRect[0])//64, (self.Player.Hitbox[1] - self.BackgroundRect[1])//64, self.Map.BlockIDs)
 				self.CursorRow, self.CursorColumn = self.mousePosition[1]//64, self.mousePosition[0]//64
 				self.CPos = [self.CRow, self.CColumn] = [(self.mousePosition[1] - self.BackgroundRect[1])//64, (self.mousePosition[0] - self.BackgroundRect[0])//64]
 				
@@ -317,7 +310,7 @@ class Game(Application):
 			if self.tab != "Intro" and self.tab != "Main Menu" and self.tab != "Game":
 				
 				#-# Go Back Button #-#
-				if self.objects[self.tab]["Buttons"]["Go Back"].Click(event, self.mousePosition):
+				if self.objects[self.tab]["Buttons"]["Go Back"].isMouseClick(event, self.mousePosition):
 					if self.tab == "Select Player" or self.tab == "Contact Us" or self.tab == "Settings": self.tab = "Main Menu"
 					elif self.tab == "New Player": self.tab = "Select Player"
 					elif self.tab == "Select World": self.tab = "Select Player"
@@ -328,10 +321,10 @@ class Game(Application):
 					self.tab = "Main Menu"
 
 			elif self.tab == "Main Menu":
-				if self.Play.Click(event, self.mousePosition):
+				if self.objects[self.tab]["Buttons"]["Play"].isMouseClick(event, self.mousePosition):
 					self.Page, self.SelectedPlayer = 1, None
 					self.tab = "Select Player"
-				elif self.contactUs.Click(event, self.mousePosition):	
+				elif self.objects[self.tab]["Buttons"]["Contact Us"].isMouseClick(event, self.mousePosition):	
 					self.tab = "Contact Us"
 
 			elif self.tab == "Select Player":
@@ -350,16 +343,16 @@ class Game(Application):
 								self.Page -= 1
 							self.SelectedPlayer -= 1
 
-				if self.Page * 4 >= self.CountOfPlayers and (self.CountOfPlayers%4 != 0 or (self.CountOfPlayers%4 == 0 and self.Page == (self.CountOfPlayers//4) + 1)) and self.objects[self.tab]["Buttons"]["New Player"].Click(event, self.mousePosition):
+				if self.Page * 4 >= self.CountOfPlayers and (self.CountOfPlayers%4 != 0 or (self.CountOfPlayers%4 == 0 and self.Page == (self.CountOfPlayers//4) + 1)) and self.objects[self.tab]["Buttons"]["New Player"].isMouseClick(event, self.mousePosition):
 					self.tab = "New Player"
 
-				elif (self.objects[self.tab]["Buttons"]["Select Player"].Click(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]) and self.SelectedPlayer != None:
+				elif (self.objects[self.tab]["Buttons"]["Select Player"].isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]) and self.SelectedPlayer != None:
 					self.tab = "Select World"
 					self.Page = 1
 				
 				if self.CountOfPlayers >= 4:
-					if self.NextPage.Click(event, self.mousePosition) and self.Page*4 <= self.CountOfPlayers: self.Page += 1
-					if self.NextPage2.Click(event, self.mousePosition) and self.Page > 1: self.Page -=1
+					if self.NextPage.isMouseClick(event, self.mousePosition) and self.Page*4 <= self.CountOfPlayers: self.Page += 1
+					if self.NextPage2.isMouseClick(event, self.mousePosition) and self.Page > 1: self.Page -=1
 
 				if event.type == pygame.MOUSEBUTTONUP and (self.Page-1)*4 != self.CountOfPlayers:	
 					for i in range(4):
@@ -384,10 +377,10 @@ class Game(Application):
 							self.SelectedWorld -= 1
 
 				if self.CountOfWorlds >= 4:
-					if self.NextPage.Click(event, self.mousePosition) and self.Page*4 <= self.CountOfWorlds: self.Page += 1
-					if self.NextPage2.Click(event, self.mousePosition) and self.Page > 1: self.Page -=1
+					if self.NextPage.isMouseClick(event, self.mousePosition) and self.Page*4 <= self.CountOfWorlds: self.Page += 1
+					if self.NextPage2.isMouseClick(event, self.mousePosition) and self.Page > 1: self.Page -=1
 				
-				if (self.objects[self.tab]["Buttons"]["Select World"].Click(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]) and self.SelectedWorld != None:
+				if (self.objects[self.tab]["Buttons"]["Select World"].isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]) and self.SelectedWorld != None:
 					
 					#-# Map Settings #-#
 					self.Map = Map(self.WorldName[:-4])
@@ -405,14 +398,14 @@ class Game(Application):
 							self.SelectedWorld = (self.Page-1)*4 + i
 							break
 
-				elif self.Page * 4 >= self.CountOfWorlds and (self.CountOfWorlds%4 != 0 or (self.CountOfWorlds%4 == 0 and self.Page == (self.CountOfWorlds//4) + 1)) and self.objects[self.tab]["Buttons"]["New World"].Click(event, self.mousePosition):
+				elif self.Page * 4 >= self.CountOfWorlds and (self.CountOfWorlds%4 != 0 or (self.CountOfWorlds%4 == 0 and self.Page == (self.CountOfWorlds//4) + 1)) and self.objects[self.tab]["Buttons"]["New World"].isMouseClick(event, self.mousePosition):
 					self.tab = "New World"
 
 			elif self.tab == "New Player":
 				self.PlayerNameInput.handle_event(event)
-				if self.NextButton.Click(event, self.mousePosition) and self.CharacterNo < len(self.CharactersIdle): self.CharacterNo += 1	
-				elif self.NextButton2.Click(event, self.mousePosition) and self.CharacterNo > 1: self.CharacterNo -= 1
-				elif self.CreatePlayerButton.Click(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]:
+				if self.NextButton.isMouseClick(event, self.mousePosition) and self.CharacterNo < len(self.CharactersIdle): self.CharacterNo += 1	
+				elif self.NextButton2.isMouseClick(event, self.mousePosition) and self.CharacterNo > 1: self.CharacterNo -= 1
+				elif self.CreatePlayerButton.isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]:
 					try:
 						PlayerData = open("players/"+self.PlayerNameInput.text+".txt", "r")
 					except FileNotFoundError:
@@ -424,7 +417,7 @@ class Game(Application):
 
 			elif self.tab == "New World":
 				self.WorldNameInput.handle_event(event)
-				if self.objects[self.tab]["Buttons"]["Create World"].Click(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]:
+				if self.objects[self.tab]["Buttons"]["Create World"].isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]:
 					CreateWorld(self.WorldNameInput.text, [30, 200], self.tileSize, "1")
 					self.tab = "Select World"
 
@@ -452,7 +445,7 @@ class Game(Application):
 											self.Player.Inventory.SelectedBox = self.Player.Inventory.Box.ID				
 
 						elif self.Map.MapData[self.CursorColumn + 2][self.CursorRow] in self.Map.ChestIDs:
-							print("a")
+
 							for Chest, Pos in self.Map.Chests:
 								if Pos == [[self.CursorColumn + 2][self.CursorRow]]:
 									Chest.Show = True
@@ -469,7 +462,16 @@ class Game(Application):
 		super().Run(EventHandling, self.ExitEventsHandling)
 
 	def Draw(self):
-		
+
+		if self.tab in self.objects:
+
+			if "Objects" in self.objects[self.tab]:
+				
+				for object in self.objects[self.tab]["Objects"]:
+					
+					object.Draw(self.window)
+					
+
 		if self.tab == "Game":
 
 			self.window.blit(self.Background, self.BackgroundRect)
@@ -495,18 +497,19 @@ class Game(Application):
 
 			#-# Draw Window and Objects #-#
 			self.window.blit(self.windowBackground, (0, 0))
-			self.Logo.Draw(self.window)
 
 			if self.tab == "Main Menu" or self.tab == "Intro":
 				
-				self.Play.Draw(self.window, self.mousePosition)
-				self.contactUs.Draw(self.window, self.mousePosition)
-				self.ExitButton.Draw(self.window, self.mousePosition)
-				
 				if self.tab == "Intro":
 
-					self.IntroRect[1] -= 5
-					self.window.blit(self.Intro, self.IntroRect)
+					if self.IntroRect[1] > -self.windowHeight:
+
+						self.IntroRect[1] -= 5
+						self.window.blit(self.Intro, self.IntroRect)
+
+					else:
+
+						self.tab = "Main Menu"
 
 			else:
 
@@ -675,7 +678,7 @@ class Game(Application):
 
 	def ExitEventsHandling(self, Event, mousePosition):
 
-		if Event.type == pygame.QUIT or (self.ExitButton.Click(Event, mousePosition) and self.tab == "Main Menu"):
+		if Event.type == pygame.QUIT or (self.objects["Main Menu"]["Buttons"]["Exit"].isMouseClick(Event, mousePosition) and self.tab == "Main Menu"):
 			if self.tab == "Game" and len(self.NewTiles) > 0:
 				self.Map.Save()
 			self.Exit()
@@ -693,7 +696,7 @@ class Game(Application):
 				elif self.tab == "Main Menu":
 					self.Exit()
 
-		#if self.MenuButton.Click(event, self.mousePosition):
+		#if self.MenuButton.isMouseClick(event, self.mousePosition):
 		#	if len(self.NewTiles) > 0:
 		#		self.Map.Save()	
 		#	self.tab = "Main Menu"
