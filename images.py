@@ -6,6 +6,9 @@ from scripts.path import *
 #-# Image Function #-#
 def Image(path: ImagePath, Size=[0, 0], ReturnSize=False):
 
+	if type(Size) == tuple:
+		Size = list(Size)
+
 	if Size == [0, 0] and ReturnSize == False:
 		return pygame.image.load(path).convert_alpha()
 	

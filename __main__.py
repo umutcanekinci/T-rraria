@@ -134,25 +134,40 @@ class Game(Application):
 
 	def __init__(self):
 		
-		#-# Window Settings #-#
-		self.windowSize = self.windowWidth, self.windowHeight = (1440, 900)
-		self.windowTitle = "TIRRARIA"
-
-		super().__init__(self.windowTitle, self.windowSize, None, 30)
+		super().__init__("TIRRARIA", (1440, 900), None, 30)
 		self.objects = {}
 
-		#-# Menu Objects #-#
-		self.windowBackground = pygame.image.load(ImagePath("background", "others", "jpg")).convert_alpha()		
-		self.windowBackground = pygame.transform.scale(self.windowBackground, self.windowSize)
-		self.tab = "Intro"
-		self.Intro = Image(ImagePath("intro", "others", "jpg"), self.windowSize)
-		self.IntroRect = [0, 0]
+		#-# Intro Tab Objects #-#
+		self.AddObject("Intro", "Intro", (0,0), self.size, {"Normal" : ImagePath("intro", "others", "jpg")})
 
-		self.Logo = self.AddObject("Main Menu", position=("CENTER", 20), size=(486, 142), imagePaths={"Normal" : ImagePath("logo", "others")}, surfaceSize=self.windowSize)
-		
-		#self.Play = Object("CENTER", 200, 400, 40, ImagePath("play", "button"), ImagePath("play2", "button"), self.windowSize)
-		#self.contactUs = Object("CENTER", 250, 400, 40,  ImagePath("contact_us", "button"), ImagePath("contact_us2", "button"), self.windowSize)
-		#self.ExitButton = Object("CENTER", 300, 400, 40, ImagePath("exit", "button"), ImagePath("exit2", "button"), self.windowSize)
+		#-# Main Menu Tab Objects #-#
+		self.AddObject("Main Menu", "Window Background", (0, 0), self.size, {"Normal" : ImagePath("background", "others", "jpg")})
+		self.AddObject("Main Menu", "Logo", ("CENTER", 20), (486, 142), {"Normal" : ImagePath("logo", "others")}, self.size)
+
+		#-# Contact Us Tab Objects #-#
+		self.AddObject("Contact Us", "Window Background", (0, 0), self.size, {"Normal" : ImagePath("background", "others", "jpg")})
+		self.AddObject("Contact Us", "Logo", ("CENTER", 20), (486, 142), {"Normal" : ImagePath("logo", "others")}, self.size)
+		self.AddObject("Contact Us", "Social Media", ("CENTER", 200), (600, 600), {"Normal" : ImagePath("social_media", "others")}, self.size)
+
+		#-# Select Player Tab Objects #-#
+		self.AddObject("Select Player", "Window Background", (0, 0), self.size, {"Normal" : ImagePath("background", "others", "jpg")})
+		self.AddObject("Select Player", "Logo", ("CENTER", 20), (486, 142), {"Normal" : ImagePath("logo", "others")}, self.size)
+		self.AddObject("Select Player", "Players Panel", (480, 180), (0, 0), {"Normal" : ImagePath("selectPlayer", "others")})
+
+		#-# Select World Tab Objects #-#
+		self.AddObject("Select World", "Window Background", (0, 0), self.size, {"Normal" : ImagePath("background", "others", "jpg")})
+		self.AddObject("Select World", "Logo", ("CENTER", 20), (486, 142), {"Normal" : ImagePath("logo", "others")}, self.size)
+		self.AddObject("Select World", "Players Panel", (480, 180), (0, 0), {"Normal" : ImagePath("selectWorld", "others")})
+
+		#-# New Player Tab Objects #-#
+		self.AddObject("New Player", "Window Background", (0, 0), self.size, {"Normal" : ImagePath("background", "others", "jpg")})
+		self.AddObject("New Player", "Logo", ("CENTER", 20), (486, 142), {"Normal" : ImagePath("logo", "others")}, self.size)
+		self.AddObject("New Player", "New Player Panel", (480, 180), (0, 0), {"Normal" : ImagePath("NewPlayer", "others")}, self.size)
+
+		#-# New World Tab Objects #-#
+		self.AddObject("New World", "Window Background", (0, 0), self.size, {"Normal" : ImagePath("background", "others", "jpg")})
+		self.AddObject("New World", "Logo", ("CENTER", 20), (486, 142), {"Normal" : ImagePath("logo", "others")}, self.size)
+
 
 		#-# Button Properties #-#
 		self.ButtonProperties = dict(
@@ -170,7 +185,7 @@ class Game(Application):
 		IconSize = None,
 		IconSide = None,
 		IconMargin = None,
-		surfaceSize = self.windowSize
+		surfaceSize = self.size
 		)
 		
 		self.ButtonSize = { "Play" : (400, 40),
@@ -183,43 +198,27 @@ class Game(Application):
 						    "New Player" : (233, 40),
 						    "New World" : (233, 40)}
 		
-		
-
 		self.CreateButtons({
 							"Main Menu" : [["Play", ("CENTER", 200)], ["Contact Us", ("CENTER", 250)], ["Exit", ("CENTER", 300)]],
-							"Contact Us" : [["Go Back", (100, 100)]],
-							"Select Player" : [["Select Player", (723, 845)], ["New Player", (601, 310)], ["Go Back", (700, 50)]],
-							"Select World" : [["Select World", (723, 845)], ["New World", (601, 310)], ["Go Back", (700, 50)]],
-						 	"New Player" : [["Create Player", (723, 845)], ["Go Back", (700, 50)]],	  
-						  	"New World" : [["Create World", (723, 845)], ["Go Back", (700, 50)]]
+							"Contact Us" : [["Go Back", (70, 700)]],
+							"Select Player" : [["Select Player", (723, 845)], ["New Player", (601, 310)], ["Go Back", (480, 845)]],
+							"Select World" : [["Select World", (723, 845)], ["New World", (601, 310)], ["Go Back", (480, 845)]],
+						 	"New Player" : [["Create Player", (723, 845)], ["Go Back", (480, 845)]],	  
+						  	"New World" : [["Create World", (723, 845)], ["Go Back", (480, 845)]]
 							})
-						  
-		self.SelectWorld = Image(ImagePath("selectWorld", "others"))
+		self.objects["Select Player"]["Buttons"]["Select Player"].show = False
 		self.NewWorld = Image(ImagePath("NewWorld", "others"))
-
 		self.WorldNameInput = InputBox(601, 350, 233, 40)
-		
-		self.SocialMedia = Object(("CENTER", 200), (600, 600), {"Normal" : ImagePath("social_media", "others")}, self.windowSize)
 		self.NextButton = Object((800, 550), (64, 64), {"Normal" : ImagePath("next", "button"), "Mouse Over" : ImagePath("next2", "button")})
 		self.NextButton2 = Object((565, 550), (64, 64), {"Normal" : ImagePath("next3", "button"), "Mouse Over" : ImagePath("next4", "button")})
-		
+		self.NextPage = Object((870, 740), (64, 64), {"Normal" : ImagePath("next", "button"), "Mouse Over" : ImagePath("next2", "button")})
+		self.NextPage2 = Object((510, 740), (64, 64), {"Normal" : ImagePath("next3", "button"), "Mouse Over" : ImagePath("next4", "button")})
 		self.Heart = Image(ImagePath("heart", "objects"))
 		self.Heart2 = Image(ImagePath("heart2", "objects"))
 		self.Heart3 = Image(ImagePath("heart3", "objects"))
-		self.SelectedPlayer, self.SelectedWorld = None, None
-		self.CountOfPlayers, self.CountOfWorlds = 0, 0
-		self.Page = 1
-		self.NextPage = Object((870, 740), (64, 64), {"Normal" : ImagePath("next", "button"), "Mouse Over" : ImagePath("next2", "button")})
-		self.NextPage2 = Object((510, 740), (64, 64), {"Normal" : ImagePath("next3", "button"), "Mouse Over" : ImagePath("next4", "button")})
-		
-		self.SelectPlayer = Image(ImagePath("selectPlayer", "others"))
-		
-		self.NewPlayer = Image(ImagePath("NewPlayer", "others"))
-		
 
+		
 		self.PlayerNameInput = InputBox(550, 350, 345, 40)
-
-
 		self.CharactersIdle, self.CharacterNames, self.CharacterSize, self.CharacterNo, self.CharacterWalkCount = [], [], [153, 141], 1, 0 #[153, 141]
 
 		for _, dirnames, filenames in os.walk("images/characters/"):
@@ -235,12 +234,16 @@ class Game(Application):
 			break
 
 		#-# Game Settings #-#
+		self.tab = "Intro"
+		self.SelectedPlayer, self.SelectedWorld = None, None
+		self.CountOfPlayers, self.CountOfWorlds = 0, 0
+		self.Page = 1
 		self.NewTiles, self.Items = [], []
 		self.CursorImage = Image(ImagePath("default", "cursor"))
 		#pygame.mouse.set_visible(False)
 		self.tileSize = [64, 64]
 
-	def CreateButtons(self, TabButtons): # [Tab : ["Name", Position]]
+	def CreateButtons(self, TabButtons):
 
 		for tab, buttons in TabButtons.items():
 
@@ -251,7 +254,7 @@ class Game(Application):
 				self.AddButton(name, tab, position)
 
 	def Run(self):
-		
+
 		def EventHandling(event):
 				
 			if self.tab == "Game":
@@ -299,9 +302,9 @@ class Game(Application):
 						self.Player.Facing = 0
 						self.Player.X += 78
 					if self.Map.MapData[(self.Player.Hitbox[0] + self.Player.MovSpeed + self.Player.Hitbox[2] - self.BackgroundRect[0])//64 + 2][(self.Player.Hitbox[1] - self.BackgroundRect[1])//64] not in self.Map.BlockIDs and self.Map.MapData[(self.Player.Hitbox[0] + self.Player.Hitbox[2] - self.BackgroundRect[0])//64 + 2][(self.Player.Hitbox[1] - self.BackgroundRect[1])//64 + 1] not in self.Map.BlockIDs:
-						if self.BackgroundRect[0] - self.Player.MovSpeed >= -self.Map.Size[0] + self.windowWidth and self.Player.X >= 720 - 37:
+						if self.BackgroundRect[0] - self.Player.MovSpeed >= -self.Map.Size[0] + self.width and self.Player.X >= 720 - 37:
 							self.BackgroundRect[0] -= self.Player.MovSpeed
-						elif self.Player.X + self.Player.MovSpeed <= self.windowWidth - self.Player.W:
+						elif self.Player.X + self.Player.MovSpeed <= self.width - self.Player.W:
 							self.Player.X += self.Player.MovSpeed
 				else:
 					self.Player.Standing = True
@@ -330,33 +333,51 @@ class Game(Application):
 			elif self.tab == "Select Player":
 
 				if event.type == pygame.MOUSEBUTTONDOWN:
+
 					if self.SelectedPlayer == None:
+
 						if event.button == 5:
+
 							self.SelectedPlayer = 0
+
 					else:
+
 						if event.button == 5 and self.SelectedPlayer + 1 < self.CountOfPlayers:
+
 							if self.SelectedPlayer + 1 == self.Page*4:
+
 								self.Page += 1
+
 							self.SelectedPlayer += 1
+
 						elif event.button == 4 and self.SelectedPlayer > 0:
+
 							if self.SelectedPlayer+1 == self.Page*4 - 3:
+
 								self.Page -= 1
+
 							self.SelectedPlayer -= 1
 
 				if self.Page * 4 >= self.CountOfPlayers and (self.CountOfPlayers%4 != 0 or (self.CountOfPlayers%4 == 0 and self.Page == (self.CountOfPlayers//4) + 1)) and self.objects[self.tab]["Buttons"]["New Player"].isMouseClick(event, self.mousePosition):
+					
 					self.tab = "New Player"
 
 				elif (self.objects[self.tab]["Buttons"]["Select Player"].isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]) and self.SelectedPlayer != None:
+					
 					self.tab = "Select World"
 					self.Page = 1
 				
 				if self.CountOfPlayers >= 4:
+
 					if self.NextPage.isMouseClick(event, self.mousePosition) and self.Page*4 <= self.CountOfPlayers: self.Page += 1
 					if self.NextPage2.isMouseClick(event, self.mousePosition) and self.Page > 1: self.Page -=1
 
 				if event.type == pygame.MOUSEBUTTONUP and (self.Page-1)*4 != self.CountOfPlayers:	
+
 					for i in range(4):
+
 						if pygame.Rect(490, 300 + i*110, 466, 100).collidepoint(self.mousePosition) and i + (self.Page-1)*4 + 1 <= self.CountOfPlayers:
+							
 							self.SelectedPlayer = (self.Page-1)*4 + i
 							break
 
@@ -386,7 +407,7 @@ class Game(Application):
 					self.Map = Map(self.WorldName[:-4])
 					self.Background = self.Map.Draw()
 					self.Page = 1
-					self.BackgroundRect = [-((self.Map.Size[0] - self.windowWidth) // 2), -self.Map.Size[1] + 16*64]
+					self.BackgroundRect = [-((self.Map.Size[0] - self.width) // 2), -self.Map.Size[1] + 16*64]
 
 					#-# Player Settings #-#
 					self.Player = Player(self.CharacterSize, self.Character, self.Health, self.MaxHealth, self.PlayerItems, self)
@@ -483,184 +504,170 @@ class Game(Application):
 
 			for self.Item in self.Items:
 				self.Item.Draw(self.window, self)
-					
-		else:
 
-			#-# Draw Window and Objects #-#
-			self.window.blit(self.windowBackground, (0, 0))
+		elif self.tab == "Intro":
+			
+			#-# Intro Move Animation #-#
+			if self.objects[self.tab]["Objects"]["Intro"].y > -self.height:
 
-			if self.tab == "Main Menu" or self.tab == "Intro":
-				
-				if self.tab == "Intro":
-
-					if self.IntroRect[1] > -self.windowHeight:
-
-						self.IntroRect[1] -= 5
-						self.window.blit(self.Intro, self.IntroRect)
-
-					else:
-
-						self.tab = "Main Menu"
+				self.objects[self.tab]["Objects"]["Intro"].SetY(self.objects[self.tab]["Objects"]["Intro"].y-5)
 
 			else:
 
-				if self.tab == "Contact Us":
-					
-					self.SocialMedia.Draw(self.window)	
-					self.objects[self.tab]["Buttons"]["Go Back"].SetPosition((70, 700))
-				
-				else:
+				self.tab = "Main Menu"
 
-					self.objects[self.tab]["Buttons"]["Go Back"].SetPosition((480, 845))
-					
-					if self.tab == "Select Player":
+		elif self.tab == "Select Player":
+			
+			for _, dirnames, filenames in os.walk("players/"):
 
-						self.window.blit(self.SelectPlayer, (480, 180))
-						self.objects[self.tab]["Buttons"]["Select Player"].Draw(self.window)
+				filenames.sort()
+
+				for PlayerName in filenames:
+
+					self.CountOfPlayers = len(filenames)
+
+					if self.Page*4 - 1 >= filenames.index(PlayerName) > (self.Page - 1)*4 - 1:
+
+						PlayerSurface = pygame.Surface((466, 100), pygame.SRCALPHA)
+
+						if self.SelectedPlayer == filenames.index(PlayerName):
+
+							self.PlayerName = PlayerName
+							PlayerSurface.blit(Image(ImagePath("player2", "others")), (0, 0))
+
+						else:
+
+							PlayerSurface.blit(Image(ImagePath("player", "others")), (0, 0))
+						PlayerSurface.blit(pygame.font.Font(None, 32).render(PlayerName[:-4], True, (255, 255, 255)), (100, 10))
+
+						PlayerData = open("players/"+PlayerName, "r")
+						for Line in PlayerData.readlines():
+							Veriable = Line.split(" = ")[0]
+							Value = Line.split(" = ")[1]
+
+							if Veriable == "Character":
+								if self.SelectedPlayer == filenames.index(PlayerName): self.Character = Value[:-1]
+								PlayerSurface.blit(Image(ImagePath("Head ("+ Value[-4:-2] +")", "characters/heads"), [70, 70]), (15, 15))
+							elif Veriable == "Health":
+								if self.SelectedPlayer == filenames.index(PlayerName): self.Health = int(Value)
+								Health = int(Value)
+							elif Veriable == "MaxHealth":
+								if self.SelectedPlayer == filenames.index(PlayerName): self.MaxHealth = int(Value)
+								MaxHealth = int(Value)
+							elif Veriable == "Items" and self.SelectedPlayer == filenames.index(PlayerName): self.PlayerItems = [i for i in Value.split(", ")]
+
+						i = -1
+						for i in range(Health//10):
+							PlayerSurface.blit(self.Heart, (85 + i*35, 15))
+						if Health%10 == 5:
+							i += 1
+							PlayerSurface.blit(self.Heart2, (85 + i*35, 15))
+						for j in range(9 - i):
+							PlayerSurface.blit(self.Heart3, (85 + (i+j+1)*35, 15))
+	
 						
-						for _, dirnames, filenames in os.walk("players/"):
-							for PlayerName in sorted(filenames):
-								self.CountOfPlayers = len(filenames)
-								if self.Page*4 - 1>= sorted(filenames).index(PlayerName) > (self.Page - 1)*4 - 1:
-									PlayerSurface = pygame.Surface((466, 100), pygame.SRCALPHA)
-									if self.SelectedPlayer == sorted(filenames).index(PlayerName):
-										self.PlayerName = PlayerName
-										PlayerSurface.blit(Image(ImagePath("player2", "others")), (0, 0))
-									else:	
-										PlayerSurface.blit(Image(ImagePath("player", "others")), (0, 0))
-									PlayerSurface.blit(pygame.font.Font(None, 32).render(PlayerName[:-4], True, (255, 255, 255)), (100, 10))
+						self.window.blit(PlayerSurface, (490, 300 + (filenames.index(PlayerName) - (self.Page - 1)*4)*110))
+						
+						PlayerData.close()	
+				break
 
-									PlayerData = open("players/"+PlayerName, "r")
-									for Line in PlayerData.readlines():
-										Veriable = Line.split(" = ")[0]
-										Value = Line.split(" = ")[1]
+			if self.Page * 4 >= self.CountOfPlayers:
+				if self.CountOfPlayers%4 == 0:
+					if self.Page == (self.CountOfPlayers//4) + 1:
+						self.objects[self.tab]["Buttons"]["New Player"].SetY(310 + self.CountOfPlayers%4 * 110)
+				else:
+					self.objects[self.tab]["Buttons"]["New Player"].SetY(310 + self.CountOfPlayers%4 * 110)
 
-										if Veriable == "Character":
-											if self.SelectedPlayer == sorted(filenames).index(PlayerName): self.Character = Value[:-1]
-											PlayerSurface.blit(Image(ImagePath("Head ("+ Value[-4:-2] +")", "characters/heads"), [70, 70]), (15, 15))
-										elif Veriable == "Health":
-											if self.SelectedPlayer == sorted(filenames).index(PlayerName): self.Health = int(Value)
-											Health = int(Value)
-										elif Veriable == "MaxHealth":
-											if self.SelectedPlayer == sorted(filenames).index(PlayerName): self.MaxHealth = int(Value)
-											MaxHealth = int(Value)
-										elif Veriable == "Items" and self.SelectedPlayer == sorted(filenames).index(PlayerName): self.PlayerItems = [i for i in Value.split(", ")]
+			#if self.Page * 4 == self.CountOfPlayers:
+			#	self.NextPage.ImagePath1 = "buttons, next2"
+			#else:
+			#	self.NextPage.ImagePath1 = "buttons, next" #         UNworking
+			#if self.Page == 1:
+			#	self.NextPage2.ImagePath1 = "buttons, next2"
+			#else:
+			#	self.NextPage2.ImagePath1 = "buttons, next"
+			
+			self.window.blit(pygame.font.Font(None, 50).render("Page " + str(self.Page), True, (255, 255, 255)), (670, 750))
+			self.NextPage.Draw(self.window)
+			self.NextPage2.Draw(self.window)
+		
+		elif self.tab == "Select World":
 
-									i = -1
-									for i in range(Health//10):
-										PlayerSurface.blit(self.Heart, (85 + i*35, 15))
-									if Health%10 == 5:
-										i += 1
-										PlayerSurface.blit(self.Heart2, (85 + i*35, 15))
-									for j in range(9 - i):
-										PlayerSurface.blit(self.Heart3, (85 + (i+j+1)*35, 15))
-				
-									
-									self.window.blit(PlayerSurface, (490, 300 + (sorted(filenames).index(PlayerName) - (self.Page - 1)*4)*110))
-									PlayerData.close()	
-							break
+			for _, dirnames, filenames in os.walk("worlds/"):
 
-						if self.Page * 4 >= self.CountOfPlayers:
-							if self.CountOfPlayers%4 == 0:
-								if self.Page == (self.CountOfPlayers//4) + 1:
-									self.objects[self.tab]["Buttons"]["New Player"].SetY(310 + self.CountOfPlayers%4 * 110)
-									self.objects[self.tab]["Buttons"]["New Player"].Draw(self.window)
-							else:
-								self.objects[self.tab]["Buttons"]["New Player"].SetY(310 + self.CountOfPlayers%4 * 110)
-								self.objects[self.tab]["Buttons"]["New Player"].Draw(self.window)
-						#if self.Page * 4 == self.CountOfPlayers:
-						#	self.NextPage.ImagePath1 = "buttons, next2"
-						#else:
-						#	self.NextPage.ImagePath1 = "buttons, next" #         UNworking
-						#if self.Page == 1:
-						#	self.NextPage2.ImagePath1 = "buttons, next2"
-						#else:
-						#	self.NextPage2.ImagePath1 = "buttons, next"
-						self.window.blit(pygame.font.Font(None, 50).render("Page " + str(self.Page), True, (255, 255, 255)), (670, 750))
-						self.NextPage.Draw(self.window)
-						self.NextPage2.Draw(self.window)
-					
-					elif self.tab == "Select World":
+				for WorldName in sorted(filenames):
 
-						self.window.blit(self.SelectWorld, (480, 180))
-						self.objects[self.tab]["Buttons"]["Select World"].Draw(self.window)
+					self.CountOfWorlds = len(filenames)
 
-						for _, dirnames, filenames in os.walk("worlds/"):
+					if self.Page*4 - 1 >= sorted(filenames).index(WorldName) > (self.Page - 1)*4 - 1:
 
-							for WorldName in sorted(filenames):
+						WorldData = open("worlds/"+WorldName, "r")
+						Data = WorldData.readlines()
+						WorldData.close()
 
-								self.CountOfWorlds = len(filenames)
+						if len(Data) == 102: Size = "Small World"
+						elif len(Data) == 202: Size = "Medium World"
+						elif len(Data) == 302: Size = "Large World"
+						if Data[1].strip("[]\n") == "1": Difficult = "Easy"
+						elif Data[1].strip("[]\n") == "2": Difficult = "Normal"
+						elif Data[1].strip("[]\n") == "3": Difficult = "Hard"
 
-								if self.Page*4 - 1 >= sorted(filenames).index(WorldName) > (self.Page - 1)*4 - 1:
+						WorldSurface = pygame.Surface((466, 100), pygame.SRCALPHA)
 
-									WorldData = open("worlds/"+WorldName, "r")
-									Data = WorldData.readlines()
-									WorldData.close()
+						if self.SelectedWorld == sorted(filenames).index(WorldName):
+							self.WorldName = WorldName									
+							WorldSurface.blit(Image(ImagePath("world2", "others")), (0, 0))
+						else:
+							WorldSurface.blit(Image(ImagePath("world", "others")), (0, 0))
+						
+						WorldSurface.blit(pygame.font.Font(None, 32).render(WorldName[:-4], True, (255, 255, 255)), (100, 10))
+						WorldSurface.blit(pygame.font.Font(None, 32).render(Difficult, True, (255, 255, 255)), (100, 40))
+						WorldSurface.blit(pygame.font.Font(None, 32).render(Size, True, (255, 255, 255)), (100, 70))
+						
+						self.window.blit(WorldSurface, (490, 300 + (sorted(filenames).index(WorldName) - (self.Page - 1)*4)*110))
+						
+				break
 
-									if len(Data) == 102: Size = "Small World"
-									elif len(Data) == 202: Size = "Medium World"
-									elif len(Data) == 302: Size = "Large World"
-									if Data[1].strip("[]\n") == "1": Difficult = "Easy"
-									elif Data[1].strip("[]\n") == "2": Difficult = "Normal"
-									elif Data[1].strip("[]\n") == "3": Difficult = "Hard"
+			if self.Page * 4 >= self.CountOfWorlds:
+				if self.CountOfWorlds%4 == 0:
+					if self.Page == (self.CountOfWorlds//4) + 1:
+						
+						self.objects[self.tab]["Buttons"]["New World"].SetY(310 + (self.CountOfWorlds%4) * 110)
+						self.objects[self.tab]["Buttons"]["New World"].Draw(self.window)
+				else:
+					self.objects[self.tab]["Buttons"]["New World"].SetY(310 + (self.CountOfWorlds%4) * 110)
+					self.objects[self.tab]["Buttons"]["New World"].Draw(self.window)
+			#if self.Page * 4 == self.CountOfPlayers:
+			#	self.NextPage.ImagePath1 = "buttons, next2"
+			#else:
+			#	self.NextPage.ImagePath1 = "buttons, next" #         UNworking
+			#if self.Page == 1:
+			#	self.NextPage2.ImagePath1 = "buttons, next2"
+			#else:
+			#	self.NextPage2.ImagePath1 = "buttons, next"
 
-									WorldSurface = pygame.Surface((466, 100), pygame.SRCALPHA)
+			self.window.blit(pygame.font.Font(None, 50).render("Page " + str(self.Page), True, (255, 255, 255)), (670, 750))
+			self.NextPage.Draw(self.window)
+			self.NextPage2.Draw(self.window)
 
-									if self.SelectedWorld == sorted(filenames).index(WorldName):
-										self.WorldName = WorldName									
-										WorldSurface.blit(Image(ImagePath("world2", "others")), (0, 0))
-									else:
-										WorldSurface.blit(Image(ImagePath("world", "others")), (0, 0))
-									
-									WorldSurface.blit(pygame.font.Font(None, 32).render(WorldName[:-4], True, (255, 255, 255)), (100, 10))
-									WorldSurface.blit(pygame.font.Font(None, 32).render(Difficult, True, (255, 255, 255)), (100, 40))
-									WorldSurface.blit(pygame.font.Font(None, 32).render(Size, True, (255, 255, 255)), (100, 70))
-									
-									self.window.blit(WorldSurface, (490, 300 + (sorted(filenames).index(WorldName) - (self.Page - 1)*4)*110))
-									
-							break
+		elif self.tab == "New Player":
 
-						if self.Page * 4 >= self.CountOfWorlds:
-							if self.CountOfWorlds%4 == 0:
-								if self.Page == (self.CountOfWorlds//4) + 1:
-									
-									self.objects[self.tab]["Buttons"]["New World"].SetY(310 + (self.CountOfWorlds%4) * 110)
-									self.objects[self.tab]["Buttons"]["New World"].Draw(self.window)
-							else:
-								self.objects[self.tab]["Buttons"]["New World"].SetY(310 + (self.CountOfWorlds%4) * 110)
-								self.objects[self.tab]["Buttons"]["New World"].Draw(self.window)
-						#if self.Page * 4 == self.CountOfPlayers:
-						#	self.NextPage.ImagePath1 = "buttons, next2"
-						#else:
-						#	self.NextPage.ImagePath1 = "buttons, next" #         UNworking
-						#if self.Page == 1:
-						#	self.NextPage2.ImagePath1 = "buttons, next2"
-						#else:
-						#	self.NextPage2.ImagePath1 = "buttons, next"
+			self.PlayerNameInput.draw(self.window)
 
-						self.window.blit(pygame.font.Font(None, 50).render("Page " + str(self.Page), True, (255, 255, 255)), (670, 750))
-						self.NextPage.Draw(self.window)
-						self.NextPage2.Draw(self.window)
+			self.Character = self.CharactersIdle[self.CharacterNo - 1]
+			if self.CharacterWalkCount < len(self.Character) - 1: self.CharacterWalkCount += 1
+			else: self.CharacterWalkCount = 1
+			self.window.blit(self.Character[self.CharacterWalkCount], [683, 514])
 
-					elif self.tab == "New Player":
+			self.NextButton.Draw(self.window)
+			self.NextButton2.Draw(self.window)
+			self.CreatePlayerButton.Draw(self.window)
 
-						self.window.blit(self.NewPlayer, (480, 180))
-						self.PlayerNameInput.draw(self.window)
+		elif self.tab == "New World":
 
-						self.Character = self.CharactersIdle[self.CharacterNo - 1]
-						if self.CharacterWalkCount < len(self.Character) - 1: self.CharacterWalkCount += 1
-						else: self.CharacterWalkCount = 1
-						self.window.blit(self.Character[self.CharacterWalkCount], [683, 514])
-
-						self.NextButton.Draw(self.window)
-						self.NextButton2.Draw(self.window)
-						self.CreatePlayerButton.Draw(self.window)
-
-					elif self.tab == "New World":
-
-						self.window.blit(self.NewWorld, (480, 180))
-						self.WorldNameInput.draw(self.window)
-						self.objects[self.tab]["Buttons"]["Create World"].Draw(self.window)
+				self.window.blit(self.NewWorld, (480, 180))
+				self.WorldNameInput.draw(self.window)
+				self.objects[self.tab]["Buttons"]["Create World"].Draw(self.window)
 
 				self.objects[self.tab]["Buttons"]["Go Back"].Draw(self.window)
 

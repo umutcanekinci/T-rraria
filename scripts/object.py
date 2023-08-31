@@ -6,16 +6,20 @@ from images import *
 #-# Object Class #-#
 class Object(object):
 
-	def __init__(self, position: tuple = ("CENTER", "CENTER"), size: tuple = (None, None), imagePaths = {}, surfaceSize: tuple = None):
+	def __init__(self, position: tuple = ("CENTER", "CENTER"), size: tuple = (0, 0), imagePaths = {}, surfaceSize: tuple = None, show = True):
 		
-		self.surface = None
-		self.surfaceSize = surfaceSize
-		self.size = self.width, self.height = size
-		self.imagePaths = imagePaths
-		
+		self.surfaceSize, self.imagePaths = surfaceSize, imagePaths
+		self.size = size
+		self.AddImages()
+		self.SetSize(size)
 		self.SetPosition(position)
+		self.show = show
+		self.surface = None
+
+	def AddImages(self):
+
 		self.images = {}
-		
+
 		for name, path in self.imagePaths.items():
 			
 			self.AddImage(name, path)
@@ -29,6 +33,23 @@ class Object(object):
 	def AddImagePath(self, name, imagePath):
 
 		self.imagePaths[name] = imagePath
+
+	def SetSize(self, size):
+		
+		if not size and size[0] and size[1]:
+
+			if len(self.images) > 0:
+
+				if "Normal" in self.images:
+					size = self.images["Normal"].get_rect().size
+				
+				else:
+					size = self.images.values()[0].get_rect().size
+
+				self.size = self.width, self.height = size
+		else:
+
+			self.size = self.width, self.height = size
 
 	def SetPosition(self, position: tuple) -> None:
 
@@ -108,12 +129,13 @@ class Object(object):
 
 	def Draw(self, surface) -> None:
 
-		if self.surface:
-			
-			surface.blit(self.surface, self.rect)
-			
-		elif "Normal" in self.images:
+		if self.show:
+			if self.surface:
+				
+				surface.blit(self.surface, self.rect)
+				
+			elif "Normal" in self.images:
 
-			self.surface = self.images["Normal"]
-			surface.blit(self.surface, self.rect)
+				self.surface = self.images["Normal"]
+				surface.blit(self.surface, self.rect)
 		

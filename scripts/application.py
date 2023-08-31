@@ -24,7 +24,7 @@ class Application():
 
         #-# Main Loop #-#
         while self.isRunning:
-            
+
             #-# FPS #-#
             self.clock.tick(self.FPS)
 
@@ -37,8 +37,6 @@ class Application():
             #-# Handling Events #-#
             for event in pygame.event.get():
                 
-                
-
                 if self.tab in self.objects:
                     
                     if "Buttons" in self.objects[self.tab]:
@@ -47,7 +45,7 @@ class Application():
 
                     if "Objects" in self.objects[self.tab]:
 
-                        for object in self.objects[self.tab]["Objects"]: object.HandleEvents(event, self.mousePosition)
+                        for object in self.objects[self.tab]["Objects"].values(): object.HandleEvents(event, self.mousePosition)
 
                 if exitEventsHandling:
                     
@@ -106,7 +104,7 @@ class Application():
 
         self.backgroundColor = color
 
-    def AddObject(self, tab: str, **kwargs):
+    def AddObject(self, tab: str, name: str, *args):
         
         #-# Creat Tab If not exist #-#
         self.AddTab(tab)
@@ -114,10 +112,10 @@ class Application():
         #-# Create object list into tab if not exist #-#
         if "Objects" not in self.objects[tab]:
 
-            self.objects[tab]["Objects"] = []
+            self.objects[tab]["Objects"] = {}
 
-        newObject = Object(**kwargs)
-        self.objects[tab]["Objects"].append(newObject)
+        newObject = Object(*args)
+        self.objects[tab]["Objects"][name] = newObject
 
     def AddButton(self, name: str, tab: str, position: tuple) -> None:
         
@@ -154,14 +152,16 @@ class Application():
 
         if self.tab in self.objects:
 
-            if "Buttons" in self.objects[self.tab]:
-
-                for button in self.objects[self.tab]["Buttons"].values(): button.Draw(self.window)
-            
             if "Objects" in self.objects[self.tab]:
-				
-                for object in self.objects[self.tab]["Objects"]:
+
+                for object in self.objects[self.tab]["Objects"].values():
 					
                     object.Draw(self.window)
+
+            if "Buttons" in self.objects[self.tab]:
+
+                for button in self.objects[self.tab]["Buttons"].values():
+                    
+                    button.Draw(self.window)
                                         
         pygame.display.update()

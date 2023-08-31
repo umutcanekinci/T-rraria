@@ -23,10 +23,11 @@ class Button(Object):
 			IconSize=[10, 10],
 			IconSide="LeftCenter",
 			IconMargin=20,
-			surfaceSize: tuple = None
+			surfaceSize: tuple = None,
+			show = True
 			):
 		
-		super().__init__(position, size, {}, surfaceSize)
+		super().__init__(position, size, {}, surfaceSize, show)
 		#-# Button Proporties #-#
 		self.Rect = pygame.Rect(self.position[0] - CornerRadius, self.position[1] - CornerRadius, self.size[0] + CornerRadius*2, self.size[1] + CornerRadius*2)
 		self.Color, self.ActiveColor, self.CornerRadius, self.BorderSize, self.BorderColor = pygame.Color(Color), pygame.Color(ActiveColor), CornerRadius, BorderSize, pygame.Color(BorderColor)
