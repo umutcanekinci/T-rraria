@@ -12,35 +12,48 @@ from scripts.color import *
 from button import *
 from scripts.path import *
 from scripts.object import *
-from scripts.character import *
-from scripts.world import *
+from scripts.playerBox import *
+from scripts.worldBox import *
 
 class InputBox:
 
 	def __init__(self, x, y, w, h, text=''):
+
 		self.rect = pygame.Rect(x, y, w, h)
 		self.color = pygame.Color('dodgerblue2') # ('lightskyblue3')
 		self.text = text
 		self.txt_surface = pygame.font.Font(None, 32).render(text, True, self.color)
 		self.active = True # False
 
-	def handle_event(self, event):
+	def HandleEvents(self, event, mousePosition):
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
+
 			# If the user clicked on the input_box rect.
-			if self.rect.collidepoint(event.pos):
+			if self.rect.collidepoint(mousePosition):
+
 				# Toggle the active variable.
 				self.active = True #not self.active
+
 			else:
+
 				self.active = False
+
 			# Change the current color of the input box.
 			self.color = pygame.Color('dodgerblue2') if self.active else pygame.Color('lightskyblue3')
+
 		if event.type == pygame.KEYDOWN:
+
 			if self.active:
+
 				if event.key == pygame.K_BACKSPACE:
+
 					self.text = self.text[:-1]
+
 				else:
+
 					self.text += event.unicode
+
 				# Re-render the text.
 				self.txt_surface = pygame.font.Font(None, 32).render(self.text, True, self.color)
 
@@ -50,7 +63,7 @@ class InputBox:
 		if self.rect.w < width:        
 			self.rect.w = width
 
-	def draw(self, screen):
+	def Draw(self, screen):
 		# Blit the text.
 		screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
 		# Blit the rect.
@@ -66,15 +79,20 @@ class Player(object):
 		self.Sprites = {}
 
 		for _, dirNames, fileNames in os.walk("images/characters/"+str(self.CharacterName)+"/"):
+
 			for SpriteFolder in dirNames:
+
 				self.Sprites[SpriteFolder] = [[Image(ImagePath(Photo[:-4], "characters/"+self.CharacterName+"/"+SpriteFolder), self.Size, Photo[-4:]) for Photo in images] for _, dirNames, images in os.walk("images/characters/"+self.CharacterName+"/"+SpriteFolder+"/")][0]
+			
 			break
 
 		self.Images = [self.RightImages, self.LeftImages] = [self.Sprites.get("Idle"), self.Sprites.get("Walk"), self.Sprites.get("Run"), self.Sprites.get("Jump"), self.Sprites.get("Dead")], [[], [], [], [], []]
 		
 
 		for i in range(5):
+
 			for i2 in range(15):
+
 				self.LeftImages[i].append(pygame.transform.flip(self.RightImages[i][i2], True, False))
 
 		self.Facing = self.WalkCount= 0
@@ -106,31 +124,50 @@ class Player(object):
 			self.WalkCount += 1
 
 		if self.Jumping or self.Falling:
+
 			Window.blit(self.Images[self.Facing][3][self.WalkCount], self.Rect)	
+			
 		elif self.isRunning:
+			
 			self.MovSpeed = 14
 			Window.blit(self.Images[self.Facing][2][self.WalkCount], self.Rect)
+
 		elif not self.Standing:
+
 			self.MovSpeed = 7
 			Window.blit(self.Images[self.Facing][1][self.WalkCount], self.Rect)
+
 		else:
+
 			self.MovSpeed = 7
 			Window.blit(self.Images[self.Facing][0][self.WalkCount], self.Rect)
 		
 
 		i = -1
+
 		for i in range(self.Health//10):
+
 			Window.blit(self.Heart, (i*35, 0))
+
 		if self.Health%10 == 5:
+
 			i += 1
 			Window.blit(self.Heart2, (i*35, 0))
+
 		for j in range(9 - i):
+
 			Window.blit(self.Heart3, ((i+j+1)*35, 0))
+
 		self.Inventory.Draw(Window, mousePosition)
+
 		if self.Facing == 0:
+
 			self.Hitbox = (self.X, self.Y + 5, 75, 122)
+
 		else:
+
 			self.Hitbox = (self.X + 78, self.Y + 5, 75, 122)
+			
 		#pygame.draw.rect(Window, (255,0,0), self.Hitbox,2)
 
 class Game(Application):
@@ -143,7 +180,7 @@ class Game(Application):
 		#region
 
 		self.tab = "Intro"
-		self.selectedPlayerNumber, self.SelectedWorld = None, None
+		self.selectedPlayerNumber, self.selectedWorldNumber = None, None
 		self.playerCount, self.CountOfWorlds = 0, 0
 		self.NewTiles, self.Items = [], []
 		self.CursorImage = Image(ImagePath("default", "cursor"))
@@ -187,11 +224,16 @@ class Game(Application):
 		self.CreateObject("New Player", "Window Background", (0, 0), self.size, {"Normal" : ImagePath("background", "others", "jpg")})
 		self.CreateObject("New Player", "Logo", ("CENTER", 20), (486, 142), {"Normal" : ImagePath("logo", "others")}, self.size)
 		self.CreateObject("New Player", "New Player Panel", (480, 180), (0, 0), {"Normal" : ImagePath("NewPlayer", "others")}, self.size)
+		self.CreateObject("New Player", "Next", (800, 550), (64, 64), {"Normal" : ImagePath("next", "button"), "Mouse Over" : ImagePath("next2", "button")})
+		self.CreateObject("New Player", "Previous", (565, 550), (64, 64), {"Normal" : ImagePath("next3", "button"), "Mouse Over" : ImagePath("next4", "button")})
+		self.AddObject("New Player", "Player Name Input", InputBox(550, 350, 345, 40))
 
 		#-# New World Tab Objects #-#
 		self.CreateObject("New World", "Window Background", (0, 0), self.size, {"Normal" : ImagePath("background", "others", "jpg")})
 		self.CreateObject("New World", "Logo", ("CENTER", 20), (486, 142), {"Normal" : ImagePath("logo", "others")}, self.size)
-
+		self.CreateObject("New World", "New World Panel", (480, 180), (0, 0), {"Normal" : ImagePath("NewWorld", "others")}, self.size)
+		self.AddObject("New World", "World Name Input", InputBox(601, 350, 233, 40))
+		
 		#endregion
 
 		#-# Creating Texts #-#
@@ -258,7 +300,7 @@ class Game(Application):
 											  ["Go Back", (480, 845), (233, 40)]],
 
 							"Select World" : [["Select World", (723, 845), (233, 40)],
-											 ["New World", (601, 310), (233, 40)],
+											 ["New World", (601, 200 + (self.worldCount%4 + 1) * 110), (233, 40)],
 						 					 ["Go Back", (480, 845), (233, 40)]],
 											  
 						 	"New Player" : [["Create Player", (723, 845), (233, 40)],
@@ -271,42 +313,36 @@ class Game(Application):
 		
 		#endregion
 
-		self.WorldNameInput = InputBox(601, 350, 233, 40)
-		self.PlayerNameInput = InputBox(550, 350, 345, 40)
-
-		self.NextButton = Object((800, 550), (64, 64), {"Normal" : ImagePath("next", "button"), "Mouse Over" : ImagePath("next2", "button")})
-		self.NextButton2 = Object((565, 550), (64, 64), {"Normal" : ImagePath("next3", "button"), "Mouse Over" : ImagePath("next4", "button")})
-		
-		self.playersIdle, self.CharacterNames, self.playersize, self.CharacterNo, self.CharacterWalkCount = [], [], [153, 141], 1, 0 #[153, 141]
+		self.playersIdle, self.characterNames, self.playersize, self.characterNo, self.characterWalkCount = [], [], [153, 141], 1, 0 #[153, 141]
 
 		for _, dirNames, fileNames in os.walk("images/characters/"):
 
-			for CharacterFolder in sorted(dirNames):
+			for characterFolder in sorted(dirNames):
 
 				Idle = []
 
-				for _, dirNames, fileNames in os.walk("images/characters/"+CharacterFolder+"/Idle/"):
+				for _, dirNames, fileNames in os.walk("images/characters/"+characterFolder+"/Idle/"):
 
 					for Photo in sorted(fileNames):
 
-						Idle.append(Image(ImagePath(Photo[:-4], "characters/"+CharacterFolder+"/Idle"), self.playersize, Photo[-4:]))
+						Idle.append(Image(ImagePath(Photo[:-4], "characters/"+characterFolder+"/Idle"), self.playersize, Photo[-4:]))
 
 					break	
 
 				self.playersIdle.append(Idle)
-				self.CharacterNames.append(CharacterFolder)
+				self.characterNames.append(characterFolder)
 
 			break
 
 	def AddPlayer(self, number, name, position: tuple, size: tuple):
-		
-		newPlayer = Character(name, position, size)
+
+		newPlayer = PlayerBox(name, position, size)
 		self.players[number] = newPlayer
 		self.AddObject("Select Player", name, newPlayer)
 
 	def AddWorld(self, number, name, position: tuple, size: tuple):
-		
-		newWorld = World(name, position, size)
+
+		newWorld = WorldBox(name, position, size)
 		self.worlds[number] = newWorld
 		self.AddObject("Select World", name, newWorld)
 
@@ -685,7 +721,6 @@ class Game(Application):
 					
 					self.OpenPlayerPage(1)
 					self.SelectPlayer(0)
-
 					self.tab = "Select Player"
 
 				elif self.objects[self.tab]["Buttons"]["Contact Us"].isMouseClick(event, self.mousePosition):	
@@ -718,15 +753,15 @@ class Game(Application):
 
 				elif (self.objects[self.tab]["Buttons"]["Select Player"].isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]) and self.selectedPlayerNumber != None:
 					
+					self.OpenWorldPage(1)
+					self.SelectWorld(0)
 					self.tab = "Select World"
-					self.pageNumber = 1
-					self.UpdatePlayerPageNumber(self.tab)
 				
-				if self.objects["Select Player"]["Objects"]["Next Page"].isMouseClick(event, self.mousePosition):
+				elif self.objects[self.tab]["Objects"]["Next Page"].isMouseClick(event, self.mousePosition):
 					
 					self.OpenNextPlayerPage()
 
-				if self.objects["Select Player"]["Objects"]["Previous Page"].isMouseClick(event, self.mousePosition):
+				elif self.objects[self.tab]["Objects"]["Previous Page"].isMouseClick(event, self.mousePosition):
 					
 					self.OpenPreviousPlayerPage()
 
@@ -736,81 +771,87 @@ class Game(Application):
 
 					if event.button == 5:
 
-						self.SelectNextPlayer()
+						self.SelectNextWorld()
 
 					elif event.button == 4:
 
-						self.SelectPreviousPlayer()
+						self.SelectPreviousWorld()
 
 					else:
 						
-						for i in range(len(self.players)):
+						for i in range(len(self.worlds)):
 
-							if self.players[i].isMouseClick(event, self.mousePosition):
+							if self.worlds[i].isMouseClick(event, self.mousePosition):
 						
-								self.SelectPlayer(i)
+								self.SelectWorld(i)
 
-				if self.CountOfWorlds >= 4:
-					if self.objects["Select World"]["Objects"]["Next Page"].isMouseClick(event, self.mousePosition) and self.pageNumber*4 <= self.CountOfWorlds:
-						
-						self.pageNumber += 1
-						self.UpdatePlayerPageNumber(self.tab)
-
-					if self.objects["Select World"]["Objects"]["Previous Page"].isMouseClick(event, self.mousePosition) and self.pageNumber > 1:
-						
-						self.pageNumber -=1
-						self.UpdatePlayerPageNumber(self.tab)
-
-				if (self.objects[self.tab]["Buttons"]["Select World"].isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]) and self.SelectedWorld != None:
+				if self.objects[self.tab]["Buttons"]["New World"].isMouseClick(event, self.mousePosition):
 					
+					self.tab = "New World"
+
+				elif (self.objects[self.tab]["Buttons"]["Select World"].isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]) and self.selectedWorldNumber != None:
+					
+					world = self.worlds[self.selectedWorldNumber]
+					player = self.players[self.selectedPlayerNumber]
+
 					#-# Map Settings #-#
-					self.Map = Map(self.WorldName[:-4])
+					self.Map = Map(world.name[:-4])
 					self.Background = self.Map.Draw()
 
 					self.BackgroundRect = [-((self.Map.Size[0] - self.width) // 2), -self.Map.Size[1] + 16*64]
 
-					#-# Player Settings #-#
-					self.Player = Player(self.playersize, self.Character, self.Health, self.MaxHealth, self.PlayerItems, self)
+					#-# World Settings #-#
+					self.Player = Player(player.size, player.character, player.HP, player.maxHP, player.items, self)
 					self.tab = "Game"
 					self.pageNumber = 1
-					self.UpdatePlayerPageNumber(self.tab)
+					self.UpdateWorldPageNumber(self.tab)
 
-				elif event.type == pygame.MOUSEBUTTONUP and (self.pageNumber-1)*4 != self.CountOfWorlds:	
-
-					for i in range(4):
-
-						if pygame.Rect(490, 300 + i*110, 466, 100).collidepoint(self.mousePosition) and i + (self.pageNumber-1)*4 + 1 <= self.CountOfWorlds:
-							
-							self.SelectedWorld = (self.pageNumber-1)*4 + i
-							break
-
-				elif self.pageNumber * 4 >= self.CountOfWorlds and (self.CountOfWorlds%4 != 0 or (self.CountOfWorlds%4 == 0 and self.pageNumber == (self.CountOfWorlds//4) + 1)) and self.objects[self.tab]["Buttons"]["New World"].isMouseClick(event, self.mousePosition):
+				elif self.objects[self.tab]["Objects"]["Next Page"].isMouseClick(event, self.mousePosition):
 					
-					self.tab = "New World"
+					self.OpenNextWorldPage()
+
+				elif self.objects[self.tab]["Objects"]["Previous Page"].isMouseClick(event, self.mousePosition):
+					
+					self.OpenPreviousWorldPage()
 
 			elif self.tab == "New Player":
-
-				self.PlayerNameInput.handle_event(event)
 				
-				if self.NextButton.isMouseClick(event, self.mousePosition) and self.CharacterNo < len(self.playersIdle): self.CharacterNo += 1	
+				if self.objects[self.tab]["Objects"]["Next"].isMouseClick(event, self.mousePosition) and self.CharacterNo < len(self.playersIdle):
+					
+					self.CharacterNo += 1	
 				
-				elif self.NextButton2.isMouseClick(event, self.mousePosition) and self.CharacterNo > 1: self.CharacterNo -= 1
+				elif self.objects[self.tab]["Objects"]["Previous"].isMouseClick(event, self.mousePosition) and self.CharacterNo > 1:
+					
+					self.CharacterNo -= 1
 				
-				elif self.CreatePlayerButton.isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]:
+				elif self.objects[self.tab]["Buttons"]["Create Player"].isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]:
+					
 					try:
-						PlayerData = open("players/"+self.PlayerNameInput.text+".txt", "r")
+
+						playerData = open("players/"+self.objects[self.tab]["Objects"]["Player Name Input"].text+".txt", "r")
+					
 					except FileNotFoundError:
-						PlayerData = open("players/"+self.PlayerNameInput.text+".txt", "w")
-						PlayerData.write("Character = "+self.CharacterNames[self.CharacterNo - 1]+"\nMaxHealth = 100\nHealth = 100\nItems = []")
+						
+						playerData = open("players/"+self.objects[self.tab]["Objects"]["Player Name Input"].text+".txt", "w")
+						playerData.write("Character = "+self.CharacterNames[self.CharacterNo - 1]+"\nMaxHealth = 100\nHealth = 100\nItems = []")
 						self.tab = "Select Player"
+
 					finally:
-						PlayerData.close()
+
+						playerData.close()
+
+				self.objects[self.tab]["Objects"]["Player Name Input"].update()
 
 			elif self.tab == "New World":
-				self.WorldNameInput.handle_event(event)
+
 				if self.objects[self.tab]["Buttons"]["Create World"].isMouseClick(event, self.mousePosition) or self.keys[pygame.K_KP_ENTER] or self.keys[pygame.K_RETURN]:
-					CreateWorld(self.WorldNameInput.text, [30, 200], self.tileSize, "1")
+					
+					CreateWorld(self.objects[self.tab]["Objects"]["World Name Input"].text, [30, 200], self.tileSize, "1")
 					self.tab = "Select World"
+
+				else:
+
+					self.objects[self.tab]["Objects"]["World Name Input"].update()
 
 			elif self.tab == "Game":
 				if event.type == pygame.MOUSEBUTTONDOWN:
@@ -845,10 +886,6 @@ class Game(Application):
 							for self.Player.Inventory.Box in self.Player.Inventory.Boxs:
 								if self.Player.Inventory.Box.ID == self.Player.Inventory.SelectedBox and self.Player.Inventory.Box.Item != None:
 									self.NewTiles = self.Map.AddTile(self.CPos, self.Player.Inventory.Box.Item.ID, self)
-
-			#-# Updating the Window #-#
-			self.WorldNameInput.update()
-			self.PlayerNameInput.update()
 
 		super().Run(EventHandling, self.ExitEventsHandling)
 
@@ -888,24 +925,17 @@ class Game(Application):
 
 		elif self.tab == "New Player":
 
-			self.PlayerNameInput.draw(self.window)
+			self.Character = self.playersIdle[self.characterNo - 1]
 
-			self.Character = self.playersIdle[self.CharacterNo - 1]
-			if self.CharacterWalkCount < len(self.Character) - 1: self.CharacterWalkCount += 1
-			else: self.CharacterWalkCount = 1
-			self.window.blit(self.Character[self.CharacterWalkCount], [683, 514])
+			if self.characterWalkCount < len(self.Character) - 1:
+				
+				self.characterWalkCount += 1
 
-			self.NextButton.Draw(self.window)
-			self.NextButton2.Draw(self.window)
-			self.CreatePlayerButton.Draw(self.window)
+			else:
 
-		elif self.tab == "New World":
+				self.characterWalkCount = 1
 
-				self.window.blit(self.NewWorld, (480, 180))
-				self.WorldNameInput.draw(self.window)
-				self.objects[self.tab]["Buttons"]["Create World"].Draw(self.window)
-
-				self.objects[self.tab]["Buttons"]["Go Back"].Draw(self.window)
+			self.window.blit(self.Character[self.characterWalkCount][0], [683, 514])
 
 		super().Draw()
 

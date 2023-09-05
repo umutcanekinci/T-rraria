@@ -1,7 +1,7 @@
 import pygame
 from scripts.object import *
 
-class Character(Object):
+class PlayerBox(Object):
     
     def __init__(self, name, position: tuple, size: tuple) -> None:
 
@@ -32,40 +32,30 @@ class Character(Object):
 
             if variable == "Character":
 
-                #if self.SelectedPlayer == filenames.index(name):
-                #	self.Character = value[:-1]
+                self.character = value[:-1]
 
                 self.surfaces["Unselected"].blit(Image(ImagePath("Head ("+ value[-4:-2] +")", "characters/heads"), [70, 70]), (15, 15))
                 self.surfaces["Selected"].blit(Image(ImagePath("Head ("+ value[-4:-2] +")", "characters/heads"), [70, 70]), (15, 15))
             
             elif variable == "Health":
                 
-                #if self.SelectedPlayer == filenames.index(name):
-                #	self.Health = int(value)
-                
-                Health = int(value)
+                self.HP = int(value)
             
             elif variable == "MaxHealth":
                 
-                #if self.SelectedPlayer == filenames.index(name):
-                #	self.MaxHealth = int(value)
-                
-                MaxHealth = int(value)
+                self.maxHP = int(value)
             
             elif variable == "Items":
                 
-                #if self.SelectedPlayer == filenames.index(name):
-                
-                #	self.PlayerItems = [i for i in value.split(", ")]
-                pass
+                self.items = [i for i in value.split(", ")]
 
         i = -1
-        for i in range(Health//10):
+        for i in range(self.HP//10):
 
             self.surfaces["Unselected"].blit(self.Heart, (85 + i*35, 15))
             self.surfaces["Selected"].blit(self.Heart, (85 + i*35, 15))
 
-        if Health%10 == 5:
+        if self.HP%10 == 5:
 
             i += 1
             self.surfaces["Unselected"].blit(self.Heart2, (85 + i*35, 15))

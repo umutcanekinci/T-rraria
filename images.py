@@ -2,7 +2,6 @@
 import pygame
 from scripts.path import *
 
-
 #-# Image Function #-#
 def Image(path: ImagePath, Size=[0, 0], ReturnSize=False):
 

@@ -1,11 +1,13 @@
 import pygame
 from scripts.object import *
 
-class World(Object):
+class WorldBox(Object):
     
     def __init__(self, name, position: tuple, size: tuple) -> None:
 
         super().__init__(position, size)
+
+        self.name = name
 
         #-# Creating Surface #-#
         self.AddSurface("Unselected", pygame.Surface((466, 100), pygame.SRCALPHA))

@@ -39,7 +39,9 @@ def CreateWorld(Name, TileNumber, TileSize, Difficult):
 	Data.close()
 
 class Map(object):
+
 	def __init__(self, Name):
+
 		self.Name = Name
 
 		self.Data = open("worlds/"+self.Name+".txt", "r")
@@ -63,12 +65,17 @@ class Map(object):
 		self.FlowerIDs = range(19, 23)
 
 	def Draw(self):
+
 		self.Surface = self.BackgroundSurface
 		self.C = -1
+
 		for self.Column in self.MapData[2:]:
+
 			self.C += 1
 			self.R = -1
+
 			for self.Row in self.Column:
+				
 				self.R += 1
 				if type(self.Row) is str:
 					print(self.Row)
@@ -101,6 +108,7 @@ class Map(object):
 		return Game.NewTiles
 
 	def Save(self):
+
 		self.Data = open("worlds/"+self.Name+".txt", "w")
 		for Column in self.MapData: self.Data.write(str(Column).strip("'") + "\n")
 		self.Data.close()
