@@ -6,13 +6,13 @@ class Button(Object):
 
 	def __init__(
 			self,
+			Text="Button",
 			position: tuple = ("CENTER", "CENTER"),
 			size: tuple = (None, None),
-			Text="Button",
 			Color="white",
 			ActiveColor="white",
 			CornerRadius=0,
-			BorderSize=0,
+			BorderSize=2,
 			BorderColor="black",
 			FontSize=23,
 			FontColor="white",
@@ -108,7 +108,9 @@ class Button(Object):
 
 	def Draw(self, surface):
 
-		if self.Style == "Normal": surface.blit(self.Surface, self.Rect)
-		elif self.Style == "Active": surface.blit(self.ActiveSurface, self.Rect)
-		elif self.Style == "MouseOver": surface.blit(self.MouseOverSurface, [self.Rect.x, self.Rect.y - 5])		
-		elif self.Style == "MouseOverActive": surface.blit(self.MouseOverActiveSurface, [self.Rect.x, self.Rect.y - 5])
+		if self.show:
+
+			if self.Style == "Normal": surface.blit(self.Surface, self.Rect)
+			elif self.Style == "Active": surface.blit(self.ActiveSurface, self.Rect)
+			elif self.Style == "MouseOver": surface.blit(self.MouseOverSurface, [self.Rect.x, self.Rect.y - 5])		
+			elif self.Style == "MouseOverActive": surface.blit(self.MouseOverActiveSurface, [self.Rect.x, self.Rect.y - 5])

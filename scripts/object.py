@@ -4,35 +4,34 @@ from scripts.path import *
 from images import *
 
 #-# Object Class #-#
-class Object(object):
+class Object(pygame.Surface):
 
 	def __init__(self, position: tuple = ("CENTER", "CENTER"), size: tuple = (0, 0), imagePaths = {}, surfaceSize: tuple = None, show = True):
 		
-		self.surfaceSize, self.imagePaths = surfaceSize, imagePaths
+		self.status = None
+		self.surfaces = {}
+
 		self.size = size
-		self.AddImages()
+		self.surfaceSize = surfaceSize
+		self.show = show
+
+		self.AddImages(imagePaths)
 		self.SetSize(size)
 		self.SetPosition(position)
-		self.show = show
-		self.surface = None
 
-	def AddImages(self):
+	def AddImages(self, imagePaths):
 
-		self.images = {}
-
-		for name, path in self.imagePaths.items():
+		for name, path in imagePaths.items():
 			
 			self.AddImage(name, path)
 
 	def AddImage(self, name, imagePath):
 
-		self.AddImagePath(name, imagePath)
-		newImage = Image(imagePath, self.size)
-		self.images[name] = newImage
+		self.AddSurface(name, Image(imagePath, self.size))
 
-	def AddImagePath(self, name, imagePath):
-
-		self.imagePaths[name] = imagePath
+	def AddSurface(self, name: str, surface: pygame.Surface):
+		
+		self.surfaces[name] = surface
 
 	def SetSize(self, size):
 		
@@ -90,7 +89,7 @@ class Object(object):
 		self.position = self.position[0], self.y
 		
 		if hasattr(self, "rect"):
-		
+			
 			self.rect.topleft = self.position
 
 		else:
@@ -99,7 +98,7 @@ class Object(object):
 
 	def isMouseOver(self, mousePosition: tuple) -> bool:
 		
-		if mousePosition != None and self.rect.collidepoint(mousePosition):
+		if mousePosition != None and self.rect.collidepoint(mousePosition) and self.show:
 
 			return True
 		
@@ -113,29 +112,42 @@ class Object(object):
 		
 		return False
 
+	def Show(self):
+		
+		self.show = True
+
+	def Hide(self):
+
+		self.show = False
+
 	def HandleEvents(self, event, mousePosition):
 		
-		if "Mouse Click" in self.images and self.isMouseClick(event, mousePosition):
+		if "Mouse Click" in self.surfaces and self.isMouseClick(event, mousePosition):
 			
-			self.surface = self.images["Mouse Click"]
+			self.SetStatus("Mouse Click")
 
-		elif "Mouse Over" in self.images and self.isMouseOver(mousePosition):
+		elif "Mouse Over" in self.surfaces and self.isMouseOver(mousePosition):
 
-			self.surface = self.images["Mouse Over"]
+			self.SetStatus("Mouse Over")
 
-		elif "Normal" in self.images:
+		elif "Normal" in self.surfaces:
 
-			self.surface = self.images["Normal"]
+			self.SetStatus("Normal")
+
+	def SetStatus(self, status: str):
+
+		self.status = status
 
 	def Draw(self, surface) -> None:
 
 		if self.show:
-			if self.surface:
-				
-				surface.blit(self.surface, self.rect)
-				
-			elif "Normal" in self.images:
 
-				self.surface = self.images["Normal"]
-				surface.blit(self.surface, self.rect)
+			if self.status:
+				
+				surface.blit(self.surfaces[self.status], self.rect)
+				
+			elif "Normal" in self.surfaces:
+
+				self.SetStatus("Normal")
+				surface.blit(self.surfaces[self.status], self.rect)
 		

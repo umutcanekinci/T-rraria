@@ -1,6 +1,8 @@
 #-# Import Packages #-#
 import pygame, sys, os
 from button import *
+from scripts.color import *
+from scripts.text import *
 
 #-# Application Class #-#
 class Application():
@@ -104,7 +106,12 @@ class Application():
 
         self.backgroundColor = color
 
-    def AddObject(self, tab: str, name: str, *args):
+    def CreateObject(self, tab: str, name: str, *args):
+        
+        newObject = Object(*args)
+        self.AddObject(tab, name, newObject)
+
+    def AddObject(self, tab: str, name: str, object: Object):
         
         #-# Creat Tab If not exist #-#
         self.AddTab(tab)
@@ -114,10 +121,9 @@ class Application():
 
             self.objects[tab]["Objects"] = {}
 
-        newObject = Object(*args)
-        self.objects[tab]["Objects"][name] = newObject
+        self.objects[tab]["Objects"][name] = object
 
-    def AddButton(self, name: str, tab: str, position: tuple) -> None:
+    def CreateButton(self, tab: str, name: str, *args, **kwargs) -> None:
         
         #-# Creat Tab If not exist #-#
         self.AddTab(tab)
@@ -128,7 +134,22 @@ class Application():
             self.objects[tab]["Buttons"] = {}
         
         #-# Adding button to tab #-#
-        self.objects[tab]["Buttons"][name] = Button(position, self.ButtonSize[tab], name, **self.ButtonProperties)
+        newButton = Button(name, *args, **kwargs)
+        self.objects[tab]["Buttons"][name] = newButton
+
+    def CreateText(self, tab: str, name: str, position, text, textSize, antialias=True, color=White, backgorundColor=None) -> None:
+        
+        #-# Creat Tab If not exist #-#
+        self.AddTab(tab)
+
+        #-# Create button dict into tab if not exist #-#
+        if "Texts" not in self.objects[tab]:
+
+            self.objects[tab]["Texts"] = {}
+        
+        #-# Adding button to tab #-#
+        newText = Text(position, text, textSize, antialias, color, backgorundColor)
+        self.objects[tab]["Texts"][name] = newText
 
     def AddTab(self, name: str) -> None:
 
@@ -163,5 +184,11 @@ class Application():
                 for button in self.objects[self.tab]["Buttons"].values():
                     
                     button.Draw(self.window)
+
+            if "Texts" in self.objects[self.tab]:
+
+                for text in self.objects[self.tab]["Texts"].values():
+                    
+                    text.Draw(self.window)
                                         
         pygame.display.update()
