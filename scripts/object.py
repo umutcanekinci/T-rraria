@@ -1,7 +1,7 @@
 #-# Importing Packages #-#
 import pygame
 from scripts.path import *
-from images import *
+from scripts.images import *
 
 #-# Object Class #-#
 class Object(pygame.Surface):

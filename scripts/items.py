@@ -1,5 +1,5 @@
 import pygame
-from images import *
+from scripts.images import *
 from random import choice
 from pygame.math import Vector2
 from math import degrees, atan2

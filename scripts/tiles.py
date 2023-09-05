@@ -1,7 +1,7 @@
 import pygame
-from images import *
+from scripts.images import *
 from random import choice
-from items import Item, Inventory
+from scripts.items import Item, Inventory
 from scripts.path import *
 
 def CreateWorld(Name, TileNumber, TileSize, Difficult):

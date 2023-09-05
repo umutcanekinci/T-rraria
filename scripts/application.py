@@ -1,6 +1,6 @@
 #-# Import Packages #-#
 import pygame, sys, os
-from button import *
+from scripts.button import *
 from scripts.color import *
 from scripts.text import *
 
@@ -80,7 +80,7 @@ class Application():
     def InitClock(self) -> None:
 
         self.clock = pygame.time.Clock()
-                
+
     def OpenWindow(self) -> None:
 
         self.window = pygame.display.set_mode(self.size)
